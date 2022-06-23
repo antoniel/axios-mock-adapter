@@ -1,4 +1,11 @@
 {
+  "parserOptions": {
+    "ecmaVersion": 2017
+  },
+
+  "env": {
+    "es6": true
+  },
   "rules": {
     "brace-style": [2, "1tbs", { "allowSingleLine": false }],
     "comma-dangle": [2, "only-multiline"],
