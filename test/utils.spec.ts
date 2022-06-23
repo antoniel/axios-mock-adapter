@@ -1,4 +1,3 @@
-var expect = require("chai").expect;
 var find = require("../src/utils").find;
 var isEqual = require("../src/utils").isEqual;
 var isObjectOrArray = require("../src/utils").isObjectOrArray;
@@ -6,7 +5,7 @@ var isBlob = require("../src/utils").isBlob;
 var isBodyOrParametersMatching = require("../src/utils").isBodyOrParametersMatching;
 
 describe("utility functions", function () {
-  context("find", function () {
+  describe("find", function () {
     it("returns the value for which the predicate holds true", function () {
       var array = [1, 2, 3];
       var value = find(array, function (value) {
@@ -35,7 +34,7 @@ describe("utility functions", function () {
     });
   });
 
-  context("isEqual", function () {
+  describe("isEqual", function () {
     it("checks with strict equality", function () {
       var a = { foo: "5" };
       var b = { foo: 5 };
@@ -43,7 +42,7 @@ describe("utility functions", function () {
     });
   });
 
-  context("isObjectOrArray", function () {
+  describe("isObjectOrArray", function () {
     it("returns true for plain objects", function () {
       expect(isObjectOrArray({ foo: "bar" })).to.be.true;
     });
@@ -66,7 +65,7 @@ describe("utility functions", function () {
     });
   });
 
-  context("isBlob", function () {
+  describe("isBlob", function () {
     it("returns false for anything that is not a Blob", function () {
       expect(isBlob(true)).to.be.false;
       expect(isBlob(false)).to.be.false;
@@ -83,7 +82,7 @@ describe("utility functions", function () {
     });
   });
 
-  context("isBodyOrParametersMatching", function() {
+  describe("isBodyOrParametersMatching", function() {
     it('delete has params only', function () {
       expect(isBodyOrParametersMatching('delete', null, { 'a': 2 }, { 'params': { 'a': 2 } } )).to.be.true;
       expect(isBodyOrParametersMatching('delete', null, { 'a': 2 }, { 'params': { 'b': 2 } } )).to.be.false;

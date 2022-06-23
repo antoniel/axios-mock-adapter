@@ -1,8 +1,8 @@
-var axios = require("axios");
-var expect = require("chai").expect;
-var createServer = require("http").createServer;
+import axios from "axios";
+import { expect } from "vitest";
+import { createServer } from "http";
+import MockAdapter from "../src";
 
-var MockAdapter = require("../src");
 
 describe("trailing slash in axios baseUrl issue (requires Node)", function () {
   var instance;
@@ -10,7 +10,7 @@ describe("trailing slash in axios baseUrl issue (requires Node)", function () {
   var httpServer;
   var serverUrl;
 
-  before("set up Node server", function () {
+  beforeAll(function () {
     return new Promise(function (resolve, reject) {
       httpServer = createServer(function (req, resp) {
         if (req.url === "/error") {
@@ -30,7 +30,7 @@ describe("trailing slash in axios baseUrl issue (requires Node)", function () {
     });
   });
 
-  after(function () {
+  afterAll(function () {
     httpServer.close();
   });
 

@@ -1,7 +1,6 @@
-var axios = require("axios");
-var expect = require("chai").expect;
+import axios from "axios";
+import MockAdapter from "../src/index";
 
-var MockAdapter = require("../src");
 
 describe("MockAdapter history", function () {
   var instance;
