@@ -1,8 +1,6 @@
-var axios = require("axios");
-var fs = require("fs");
-var expect = require("chai").expect;
-
-var MockAdapter = require("../src");
+import fs from "fs";
+import axios from "axios";
+import { MockAdapter } from "../src/index";
 
 describe("MockAdapter basics", function () {
   var instance;
@@ -161,11 +159,11 @@ describe("MockAdapter basics", function () {
 
   it("can pass a body for delete to match to a handler", function () {
     mock
-      .onDelete("/withParams",{ data: { bar: 2 }, params: { foo: 1 } })
+      .onDelete("/withParams", { data: { bar: 2 }, params: { foo: 1 } })
       .reply(200);
 
     return instance
-      .delete("/withParams", { params: { foo: 1 }, data: { bar: 2 } } )
+      .delete("/withParams", { params: { foo: 1 }, data: { bar: 2 } })
       .then(function (response) {
         expect(response.status).to.equal(200);
       });

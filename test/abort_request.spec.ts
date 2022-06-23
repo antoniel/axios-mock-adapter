@@ -1,10 +1,8 @@
-var axios = require("axios");
-var expect = require("chai").expect;
-
-var MockAdapter = require("../src");
+import axios, { AxiosInstance } from "axios";
+import MockAdapter from "../src/index";
 
 describe("requestAborted spec", function () {
-  var instance;
+  var instance: AxiosInstance;
   var mock;
 
   beforeEach(function () {
@@ -24,7 +22,7 @@ describe("requestAborted spec", function () {
         expect.fail("should not be called");
       },
       function (error) {
-        expect(error.config).to.exist;
+        expect(error.config).toBeTruthy();
         expect(error.code).to.equal("ECONNABORTED");
         expect(error.message).to.equal("Request aborted");
         expect(error.isAxiosError).to.be.true;
@@ -34,7 +32,6 @@ describe("requestAborted spec", function () {
 
   it("can abort a request only once", function () {
     mock.onGet("/foo").abortRequestOnce().onGet("/foo").reply(200);
-
     return instance
       .get("/foo")
       .then(
@@ -44,6 +41,7 @@ describe("requestAborted spec", function () {
         }
       )
       .then(function (response) {
+        // @ts-ignore
         expect(response.status).to.equal(200);
       });
   });
