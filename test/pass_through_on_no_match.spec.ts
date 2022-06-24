@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-var createServer = require("http").createServer;
+import { createServer } from 'http';
 
 import MockAdapter from '../src/index'
 
@@ -10,7 +10,7 @@ describe("onNoMatch=passthrough option tests (requires Node)", function () {
   var httpServer;
   var serverUrl;
 
-  beforeAll("set up Node server", function () {
+  beforeAll( function () {
     return new Promise(function (resolve, reject) {
       httpServer = createServer(function (req, resp) {
         if (req.url === "/error") {

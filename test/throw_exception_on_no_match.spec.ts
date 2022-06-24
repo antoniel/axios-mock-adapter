@@ -39,6 +39,7 @@ describe("onNoMatch=throwException option tests (requires Node)", function () {
         expect(false).to.be.true;
       })
       .catch(function (error) {
+        console.log(error);
         expect(error).to.have.nested.property("isCouldNotFindMockError", true);
         expect(error).to.have.nested.property("method", expectedMethod);
         expect(error).to.have.nested.property("url", expectedUrl);

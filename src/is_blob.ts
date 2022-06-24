@@ -17,7 +17,7 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-function isBlob(value) {
+export function isBlob(value) {
   if (typeof Blob === 'undefined') {
     return false;
   }
@@ -25,4 +25,3 @@ function isBlob(value) {
   return value instanceof Blob || Object.prototype.toString.call(value) === '[object Blob]';
 }
 
-module.exports = isBlob;

@@ -1,6 +1,4 @@
-"use strict";
-
-var utils = require("./utils");
+import * as utils from "./utils";
 
 function transformRequest(data) {
   if (
@@ -33,7 +31,7 @@ function makeResponse(result, config) {
   };
 }
 
-function handleRequest(mockAdapter, resolve, reject, config) {
+export function handleRequest(mockAdapter, resolve, reject, config) {
   var url = config.url || "";
   // TODO we're not hitting this `if` in any of the tests, investigate
   if (
@@ -137,4 +135,3 @@ function handleRequest(mockAdapter, resolve, reject, config) {
   }
 }
 
-module.exports = handleRequest;

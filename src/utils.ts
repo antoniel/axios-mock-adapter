@@ -1,11 +1,13 @@
-"use strict";
 
-var isEqual = require("fast-deep-equal");
-var isBuffer = require("is-buffer");
-var isBlob = require("./is_blob");
+import _isEqual from "fast-deep-equal";
+import _isBuffer from 'is-buffer';
+import {isBlob as _isBlob} from "./is_blob";
 var toString = Object.prototype.toString;
 
-function find(array, predicate) {
+export const isBuffer = _isBuffer;
+export const isBlob = _isBlob;
+export const isEqual = _isEqual;
+export function find(array, predicate) {
   var length = array.length;
   for (var i = 0; i < length; i++) {
     var value = array[i];
@@ -13,23 +15,23 @@ function find(array, predicate) {
   }
 }
 
-function isFunction(val) {
+export function isFunction(val) {
   return toString.call(val) === "[object Function]";
 }
 
-function isObjectOrArray(val) {
+export function isObjectOrArray(val) {
   return val !== null && typeof val === "object";
 }
 
-function isStream(val) {
+export function isStream(val) {
   return isObjectOrArray(val) && isFunction(val.pipe);
 }
 
-function isArrayBuffer(val) {
+export function isArrayBuffer(val) {
   return toString.call(val) === "[object ArrayBuffer]";
 }
 
-function combineUrls(baseURL, url) {
+export function combineUrls(baseURL, url) {
   if (baseURL) {
     return baseURL.replace(/\/+$/, "") + "/" + url.replace(/^\/+/, "");
   }
@@ -37,7 +39,7 @@ function combineUrls(baseURL, url) {
   return url;
 }
 
-function findHandler(
+export function findHandler(
   handlers,
   method,
   url,
@@ -64,13 +66,13 @@ function findHandler(
   });
 }
 
-function isUrlMatching(url, required) {
+export function isUrlMatching(url, required) {
   var noSlashUrl = url[0] === "/" ? url.substr(1) : url;
   var noSlashRequired = required[0] === "/" ? required.substr(1) : required;
   return noSlashUrl === noSlashRequired;
 }
 
-function isBodyOrParametersMatching(method, body, parameters, required) {
+export function isBodyOrParametersMatching(method, body, parameters, required) {
   var allowedParamsMethods = ["delete", "get", "head", "options"];
   if (allowedParamsMethods.indexOf(method.toLowerCase()) >= 0) {
     var data = required ? required.data : undefined;
@@ -81,7 +83,7 @@ function isBodyOrParametersMatching(method, body, parameters, required) {
   }
 }
 
-function isObjectMatching(actual, expected) {
+export function isObjectMatching(actual, expected) {
   if (expected === undefined) return true;
   if (typeof expected.asymmetricMatch === "function") {
     return expected.asymmetricMatch(actual);
@@ -89,7 +91,7 @@ function isObjectMatching(actual, expected) {
   return isEqual(actual, expected);
 }
 
-function isBodyMatching(body, requiredBody) {
+export function isBodyMatching(body, requiredBody) {
   if (requiredBody === undefined) {
     return true;
   }
@@ -101,7 +103,7 @@ function isBodyMatching(body, requiredBody) {
   return isObjectMatching(parsedBody ? parsedBody : body, requiredBody);
 }
 
-function purgeIfReplyOnce(mock, handler) {
+export function purgeIfReplyOnce(mock, handler) {
   Object.keys(mock.handlers).forEach(function (key) {
     var index = mock.handlers[key].indexOf(handler);
     if (index > -1) {
@@ -110,7 +112,7 @@ function purgeIfReplyOnce(mock, handler) {
   });
 }
 
-function settle(resolve, reject, response, delay) {
+export function settle(resolve, reject, response, delay) {
   if (delay > 0) {
     setTimeout(settle, delay, resolve, reject, response);
     return;
@@ -132,7 +134,7 @@ function settle(resolve, reject, response, delay) {
   }
 }
 
-function createAxiosError(message, config, response, code) {
+export function createAxiosError(message, config, response, code) {
   var error = new Error(message);
   error.isAxiosError = true;
   error.config = config;
@@ -164,7 +166,7 @@ function createAxiosError(message, config, response, code) {
   return error;
 }
 
-function createCouldNotFindMockError(config) {
+export function createCouldNotFindMockError(config) {
   var message =
     "Could not find mock for: \n" +
     JSON.stringify(config, ["method", "url"], 2);
@@ -174,20 +176,3 @@ function createCouldNotFindMockError(config) {
   error.method = config.method;
   return error;
 }
-
-module.exports = {
-  find: find,
-  findHandler: findHandler,
-  purgeIfReplyOnce: purgeIfReplyOnce,
-  settle: settle,
-  isStream: isStream,
-  isArrayBuffer: isArrayBuffer,
-  isFunction: isFunction,
-  isObjectOrArray: isObjectOrArray,
-  isBuffer: isBuffer,
-  isBlob: isBlob,
-  isBodyOrParametersMatching: isBodyOrParametersMatching,
-  isEqual: isEqual,
-  createAxiosError: createAxiosError,
-  createCouldNotFindMockError: createCouldNotFindMockError,
-};

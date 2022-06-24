@@ -5,10 +5,10 @@ import {
   AxiosRequestConfig,
   AxiosResponse,
 } from "axios";
-import { Handlers, History, TODO, VERBS } from "./types";
+import { Handlers, History, TODO, VERBS, VERBS_W_ANY } from "./types";
 
-var handleRequest = require("./handle_request");
-var utils = require("./utils");
+import {handleRequest} from "./handle_request"
+import * as utils from "./utils";
 
 
 const VERBS: VERBS[] = [
@@ -22,7 +22,6 @@ const VERBS: VERBS[] = [
   "list",
   "link",
   "unlink",
-  "any"
 ];
 
 const getVerbObject = <T>() => {
@@ -72,7 +71,8 @@ export class MockAdapter implements VerbHandlers {
     this.delayResponse =
       options?.delayResponse > 0 ? options.delayResponse : null;
 
-    axiosInstance.defaults.adapter = this.adapter;
+    this.onNoMatch = options?.onNoMatch || "passThrough";
+    axiosInstance.defaults.adapter = this.adapter();
   }
 
   assertAxiosInstance(
@@ -83,7 +83,7 @@ export class MockAdapter implements VerbHandlers {
     }
   }
 
-  adapter = (config: AxiosRequestConfig): Promise<AxiosResponse> => {
+  adapter = () => (config: AxiosRequestConfig): Promise<AxiosResponse> => {
     var mockAdapter = this;
     return new Promise((resolve, reject) => {
       handleRequest(mockAdapter, resolve, reject, config);
@@ -102,12 +102,16 @@ export class MockAdapter implements VerbHandlers {
     this.history = getVerbObject();
   }
 
-  resetHandlers() {}
+  resetHandlers() {
+    this.handlers = getVerbObject();
+  }
 
-  resetHistory() {}
+  resetHistory() {
+    this.history = getVerbObject();
+  }
 
 
-  private on = (verb: VERBS) => (matcher, body, requestHeaders) => {
+  private on = (verb: VERBS_W_ANY) => (matcher:RegExp | string=/.*/ , body, requestHeaders) => {
     const reply = (code, response = undefined, headers = undefined) => {
       var handler = [matcher, body, requestHeaders, code, response, headers];
       addHandler(verb, this.handlers, handler);
@@ -132,9 +136,9 @@ export class MockAdapter implements VerbHandlers {
 
       replyOnce: replyOnce,
 
-      passThrough: function passThrough() {
+      passThrough:()=> {
         var handler = [matcher, body];
-        addHandler(verb, this, handler);
+        addHandler(verb, this.handlers, handler);
         return this;
       },
 
@@ -216,7 +220,7 @@ export class MockAdapter implements VerbHandlers {
   onUnlink = this.on('unlink')
 }
 
-const addHandler = (method, handlers, handler) => {
+const addHandler = (method, handlers:Handlers, handler) => {
   if (method === "any") {
     VERBS.forEach(function (verb) {
       handlers[verb].push(handler);

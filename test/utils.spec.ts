@@ -1,8 +1,6 @@
-var find = require("../src/utils").find;
-var isEqual = require("../src/utils").isEqual;
-var isObjectOrArray = require("../src/utils").isObjectOrArray;
-var isBlob = require("../src/utils").isBlob;
-var isBodyOrParametersMatching = require("../src/utils").isBodyOrParametersMatching;
+import { isBlob } from "../src/is_blob";
+import { find, isBodyOrParametersMatching, isObjectOrArray } from "../src/utils";
+import { isEqual } from "../src/utils";
 
 describe("utility functions", function () {
   describe("find", function () {

@@ -69,7 +69,7 @@ describe("MockAdapter basics", function () {
   });
 
   it("exposes the adapter", function () {
-    expect(mock.adapter()).to.be.a("function");
+    expect(typeof mock.adapter()).toBe("function");
 
     instance.defaults.adapter = mock.adapter();
 

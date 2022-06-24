@@ -11,10 +11,12 @@ export type VERBS =
   | "list"
   | "link"
   | "unlink"
-  | "any"
+
+export type VERBS_W_ANY = VERBS | "any";
   
 export type Handlers = Record<VERBS, TODO[]>;
 export type History = Record<VERBS, TODO[]>;
+
 export type VerbHandlers = {
-  [K in VERBS as `on${Capitalize<K>}`]: any
+  [K in VERBS_W_ANY as `on${Capitalize<K>}`]: any
 };
