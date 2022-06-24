@@ -52,7 +52,7 @@
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
     "tsx": "^3.5.0",
-    "typescript": "*",
+    "typescript": "^4.7.4",
     "vitest": "^0.15.2",
     "webpack": "^5.72.1",
     "webpack-bundle-analyzer": "^4.5.0",

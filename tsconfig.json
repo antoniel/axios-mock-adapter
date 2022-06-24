@@ -9,5 +9,5 @@
     "strictNullChecks": true,
     "allowJs": true,
     "outDir": "./dist" /* Specify where to put the output files. */
-  }
+  },
 }
