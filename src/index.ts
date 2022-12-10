@@ -54,13 +54,25 @@ type VerbHandlers = {
   [K in VERBS as `on${Capitalize<K>}`]: any
 };
 
-export class MockAdapter implements VerbHandlers {
+export class MockAdapter {
   axiosInstance?: AxiosInstance;
   originalAdapter?: AxiosAdapter;
   delayResponse: number | null;
   onNoMatch: "throwException" | "passThrough";
   handlers: Handlers;
   history: History;
+  onGet: VerbHandlers["onGet"];
+  onAny: VerbHandlers["onGet"];
+  onPost: VerbHandlers["onPost"];
+  onHead: VerbHandlers["onHead"];
+  onDelete: VerbHandlers["onDelete"];
+  onPatch: VerbHandlers["onPatch"];
+  onPut: VerbHandlers["onPut"];
+  onOptions: VerbHandlers["onOptions"];
+  onList: VerbHandlers["onList"];
+  onLink: VerbHandlers["onLink"];
+  onUnlink: VerbHandlers["onUnlink"];
+
 
   constructor(axiosInstance: AxiosInstance, options?: TODO) {
     this.assertAxiosInstance(axiosInstance);
@@ -73,6 +85,17 @@ export class MockAdapter implements VerbHandlers {
 
     this.onNoMatch = options?.onNoMatch || "passThrough";
     axiosInstance.defaults.adapter = this.adapter();
+    this.onGet = this.on('get')
+    this.onAny = this.on('any')
+    this.onPost = this.on('post')
+    this.onHead = this.on('head')
+    this.onDelete = this.on('delete')
+    this.onPatch = this.on('patch')
+    this.onPut = this.on('put')
+    this.onOptions = this.on('options')
+    this.onList = this.on('list')
+    this.onLink = this.on('link')
+    this.onUnlink = this.on('unlink')
   }
 
   assertAxiosInstance(
@@ -168,6 +191,7 @@ export class MockAdapter implements VerbHandlers {
 
       networkError: function () {
         return reply(function (config) {
+          // @ts-expect-error
           var error = utils.createAxiosError("Network Error", config);
           return Promise.reject(error);
         });
@@ -175,6 +199,7 @@ export class MockAdapter implements VerbHandlers {
 
       networkErrorOnce: function () {
         return replyOnce(function (config) {
+          // @ts-expect-error
           var error = utils.createAxiosError("Network Error", config);
           return Promise.reject(error);
         });
@@ -207,17 +232,7 @@ export class MockAdapter implements VerbHandlers {
       },
     };
   }
-  onGet = this.on('get')
-  onAny = this.on('any')
-  onPost = this.on('post')
-  onHead = this.on('head')
-  onDelete = this.on('delete')
-  onPatch = this.on('patch')
-  onPut = this.on('put')
-  onOptions = this.on('options')
-  onList = this.on('list')
-  onLink = this.on('link')
-  onUnlink = this.on('unlink')
+
 }
 
 const addHandler = (method, handlers:Handlers, handler) => {
