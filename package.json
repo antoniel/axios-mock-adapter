@@ -1,5 +1,5 @@
 {
-  "name": "axios-mock-adapter",
+  "name": "axios-mock-adapter-ts",
   "version": "1.21.1",
   "description": "Axios adapter that allows to easily mock requests",
   "main": "src/index.js",
@@ -15,10 +15,6 @@
     "types"
   ],
   "types": "types",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ctimmerm/axios-mock-adapter.git"
-  },
   "keywords": [
     "axios",
     "test",
@@ -27,12 +23,7 @@
     "stub",
     "adapter"
   ],
-  "author": "Colin Timmermans <colintimmermans@gmail.com>",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ctimmerm/axios-mock-adapter/issues"
-  },
-  "homepage": "https://github.com/ctimmerm/axios-mock-adapter#readme",
   "peerDependencies": {
     "axios": ">= 0.17.0"
   },
