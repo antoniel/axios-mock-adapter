@@ -18,6 +18,7 @@ describe("MockAdapter basics", function () {
   it("correctly throws an error when attempting to instantiate an undefined axios instance", function () {
     var emptyInstance = undefined;
     var constructorFunc = function () {
+      // @ts-ignore
       new MockAdapter(emptyInstance);
     };
     expect(constructorFunc).to.throw(
@@ -459,6 +460,7 @@ describe("MockAdapter basics", function () {
   it("restores the previous adapter (if any)", function () {
     var adapter = function () {};
     var newInstance = axios.create();
+    // @ts-expect-error
     newInstance.defaults.adapter = adapter;
     var newMock = new MockAdapter(newInstance);
     newMock.restore();
@@ -808,7 +810,6 @@ describe("MockAdapter basics", function () {
         });
         stream.on("end", function () {
           expect(string).to.equal(fs.readFileSync(__filename, "utf8"));
-          done();
         });
       });
   });
