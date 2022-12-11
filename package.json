@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "clean": "rimraf dist",
+    "build": "tsup src/index.ts --dts",
     "test": "vitest",
     "test:coverage": "nyc --reporter=html --reporter=text-summary mocha",
     "lint": "eslint src test"

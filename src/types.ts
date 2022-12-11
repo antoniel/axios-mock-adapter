@@ -17,14 +17,14 @@ export type VERBS_W_ANY = VERBS | "any";
 export type Matcher = RegExp | string
 export type Body = unknown
 export type RequestHeaders = unknown
-export type Code = number
+export type CodeOrFunction = number | Function
 export type Response = unknown
 export type Headers = unknown
 export type Handler = [
   Matcher,
   Body ,
   RequestHeaders ,
-  Code,
+  CodeOrFunction,
   Response,
   Headers,
   true,
@@ -32,10 +32,14 @@ export type Handler = [
   Matcher,
   Body ,
   RequestHeaders ,
-  Code,
+  CodeOrFunction,
   Response,
   Headers,
-]
+] |
+  [
+    any, // Should be a function
+    Body ,
+  ]
 export type Handlers = Record<VERBS, Handler[]>;
 export type History = Record<VERBS, TODO[]>;
 

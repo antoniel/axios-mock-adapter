@@ -5,7 +5,7 @@ import {
   AxiosRequestConfig,
   AxiosResponse,
 } from "axios";
-import { Handlers, History, TODO, VERBS, VERBS_W_ANY } from "./types";
+import { Handler, Handlers, History, Matcher, MockAdapterOptions, TODO, VERBS, VERBS_W_ANY } from "./types";
 
 import {handleRequest} from "./handle_request"
 import * as utils from "./utils";
@@ -24,32 +24,25 @@ const VERBS: VERBS[] = [
   "unlink",
 ];
 
-const getVerbObject = <T>() => {
-  return VERBS.reduce<T>((acc, verb) => {
-    const newObj: T = { ...acc, [verb]: [] };
-    return newObj;
-  }, {} as T);
-};
+/**
+ * It takes an array of strings and returns an object with the strings as keys and an empty array as
+ * the value
+ * @returns An object with the keys of the VERBS array and the values of an empty array.
+ */
+const getVerbObject = () => ({
+    get: [],
+    post: [],
+    head: [],
+    delete: [],
+    patch: [],
+    put: [],
+    options: [],
+    list: [],
+    link: [],
+    unlink: [],
+  });
 
-function findInHandlers(method, handlers, handler) {
-  var index = -1;
-  for (var i = 0; i < handlers[method].length; i += 1) {
-    var item = handlers[method][i];
-    var isReplyOnce = item.length === 7;
-    var comparePaths =
-      item[0] instanceof RegExp && handler[0] instanceof RegExp
-        ? String(item[0]) === String(handler[0])
-        : item[0] === handler[0];
-    var isSame =
-      comparePaths &&
-      utils.isEqual(item[1], handler[1]) &&
-      utils.isEqual(item[2], handler[2]);
-    if (isSame && !isReplyOnce) {
-      index = i;
-    }
-  }
-  return index;
-}
+
 type VerbHandlers = {
   [K in VERBS as `on${Capitalize<K>}`]: any
 };
@@ -74,14 +67,16 @@ export class MockAdapter {
   onUnlink: VerbHandlers["onUnlink"];
 
 
-  constructor(axiosInstance: AxiosInstance, options?: TODO) {
+  constructor(axiosInstance: AxiosInstance, options?: MockAdapterOptions) {
     this.assertAxiosInstance(axiosInstance);
-    this.handlers = getVerbObject<Handlers>();
-    this.history = getVerbObject<History>();
     this.axiosInstance = axiosInstance;
     this.originalAdapter = axiosInstance.defaults.adapter;
+
+    this.handlers = getVerbObject();
+    this.history = getVerbObject();
+
     this.delayResponse =
-      options?.delayResponse > 0 ? options.delayResponse : null;
+      options?.delayResponse ? Math.abs(options.delayResponse) : null;
 
     this.onNoMatch = options?.onNoMatch || "passThrough";
     axiosInstance.defaults.adapter = this.adapter();
@@ -133,20 +128,19 @@ export class MockAdapter {
     this.history = getVerbObject();
   }
 
-
-  private on = (verb: VERBS_W_ANY) => (matcher:RegExp | string=/.*/ , body, requestHeaders) => {
-    const reply = (code, response = undefined, headers = undefined) => {
-      var handler = [matcher, body, requestHeaders, code, response, headers];
+  private on = (verb: VERBS_W_ANY) => (matcher: Matcher =/.*/ , body: any, requestHeaders: any) => {
+    const reply = (codeOrFunction: number | Function, response = undefined, headers = undefined) => {
+      var handler: Handler = [matcher, body, requestHeaders, codeOrFunction, response, headers];
       addHandler(verb, this.handlers, handler);
       return this;
     };
     
-    const replyOnce = (code, response = undefined, headers = undefined) => {
-      var handler = [
+    const replyOnce = (codeOrFunction: number | Function, response = undefined, headers = undefined) => {
+      var handler: Handler = [
         matcher,
         body,
         requestHeaders,
-        code,
+        codeOrFunction,
         response,
         headers,
         true,
@@ -159,14 +153,14 @@ export class MockAdapter {
 
       replyOnce: replyOnce,
 
-      passThrough:()=> {
-        var handler = [matcher, body];
+      passThrough: ()=> {
+        var handler: Handler = [matcher, body];
         addHandler(verb, this.handlers, handler);
         return this;
       },
 
-      abortRequest: function () {
-        return reply(function (config) {
+      abortRequest:  () => {
+        return reply((config: TODO) => {
           var error = utils.createAxiosError(
             "Request aborted",
             config,
@@ -177,8 +171,8 @@ export class MockAdapter {
         });
       },
 
-      abortRequestOnce: function () {
-        return replyOnce(function (config) {
+      abortRequestOnce:  () => {
+        return replyOnce((config: TODO) => {
           var error = utils.createAxiosError(
             "Request aborted",
             config,
@@ -189,24 +183,24 @@ export class MockAdapter {
         });
       },
 
-      networkError: function () {
-        return reply(function (config) {
+      networkError: () => {
+        return reply((config:TODO) => {
           // @ts-expect-error
           var error = utils.createAxiosError("Network Error", config);
           return Promise.reject(error);
         });
       },
 
-      networkErrorOnce: function () {
-        return replyOnce(function (config) {
+      networkErrorOnce: () => {
+        return replyOnce((config: TODO) => {
           // @ts-expect-error
           var error = utils.createAxiosError("Network Error", config);
           return Promise.reject(error);
         });
       },
 
-      timeout: function () {
-        return reply(function (config) {
+      timeout: () => {
+        return reply((config: TODO) => {
           var error = utils.createAxiosError(
             config.timeoutErrorMessage ||
               "timeout of " + config.timeout + "ms exceeded",
@@ -218,8 +212,8 @@ export class MockAdapter {
         });
       },
 
-      timeoutOnce: function () {
-        return replyOnce(function (config) {
+      timeoutOnce: () => {
+        return replyOnce((config: TODO) => {
           var error = utils.createAxiosError(
             config.timeoutErrorMessage ||
               "timeout of " + config.timeout + "ms exceeded",
@@ -232,10 +226,9 @@ export class MockAdapter {
       },
     };
   }
-
 }
 
-const addHandler = (method, handlers:Handlers, handler) => {
+const addHandler = (method:VERBS_W_ANY , handlers:Handlers, handler:Handler) => {
   if (method === "any") {
     VERBS.forEach(function (verb) {
       handlers[verb].push(handler);
@@ -249,5 +242,25 @@ const addHandler = (method, handlers:Handlers, handler) => {
     }
   }
 };
+
+function findInHandlers(method:VERBS, handlers: Handlers, handler:Handler) {
+  var index = -1;
+  for (var i = 0; i < handlers[method].length; i += 1) {
+    var item = handlers[method][i];
+    var isReplyOnce = item.length === 7;
+    var comparePaths =
+      item[0] instanceof RegExp && handler[0] instanceof RegExp
+        ? String(item[0]) === String(handler[0])
+        : item[0] === handler[0];
+    var isSame =
+      comparePaths &&
+      utils.isEqual(item[1], handler[1]) &&
+      utils.isEqual(item[2], handler[2]);
+    if (isSame && !isReplyOnce) {
+      index = i;
+    }
+  }
+  return index;
+}
 
 export default MockAdapter;
